@@ -1,3 +1,5 @@
+*There are some less than scientifically rigourous things about this application, but when we're talking about >10 second delays in read/writes.. small variance due to other environmental factors don't really affect the end result*
+
 ## filewrite
 I was experiencing delayed IO over NFS to storage.
 
