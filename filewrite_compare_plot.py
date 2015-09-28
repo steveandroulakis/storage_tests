@@ -13,7 +13,7 @@ def _parse_when(time):
     floatwhen = '%s-%s-%s %s:%s:%s' % (fw[2], fw[1], fw[0], fw[3], fw[4], fw[5])
     return floatwhen
 
-def get_datapoints(datapoint_dir):
+def get_datapoints(datapoint_dir, threshold=0):
     times = glob.glob(datapoint_dir + "t*")
     times.sort(key=lambda x: os.path.getmtime(x))
     
@@ -22,7 +22,11 @@ def get_datapoints(datapoint_dir):
         filetime = time.split('/')[-1]
         floattime = ('.'.join([str(x) for x in filetime[1:].split('.')[:2]]))
         floatwhen = _parse_when(time)
-        floattimes.append([float(floattime),floatwhen])
+
+        if not threshold or float(floattime) < threshold:
+            floattimes.append([float(floattime),floatwhen])
+        else:
+            print "excluded time: %s (threshold: %s)" % (floattime, threshold)
         
     data_points = floattimes
     return data_points
@@ -104,7 +108,7 @@ def plot_graph(x, y_list, duration, since, delays_greater_than):
 def generate_figure(dir1, dir2, dir1name, dir2name,
                 interval, delay_threshold, outfile):
     
-    data_points_dir1 = get_datapoints(dir1)
+    data_points_dir1 = get_datapoints(dir1, 20) # exclude entries > 20
     y_dir1 = get_y(data_points_dir1, len(data_points_dir1))
 
     x = get_x_from_data_points(data_points_dir1)
